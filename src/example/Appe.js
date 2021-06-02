@@ -121,3 +121,4 @@ function App() {
 }
 
 export default App;
+// APP.JS 커멘트 추가

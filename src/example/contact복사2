@@ -1,0 +1,169 @@
+import { useRef, useState } from "react";
+
+const Contact = () => {
+  const [tbList, setTableList] = useState([]);
+
+  const fnameInput = useRef();
+  const phoneInput = useRef();
+  const emailInput = useRef();
+  const tr = useRef();
+  const add = () => {
+    setTableList([
+      {
+        fname: fnameInput.current.value,
+        phone: phoneInput.current.value,
+        email: emailInput.current.value,
+      },
+      ...tbList,
+    ]);
+
+    fnameInput.current.value = "";
+    phoneInput.current.value = "";
+    emailInput.current.value = "";
+  };
+  const remove = (index) => {
+    setTableList(tbList.filter((_, idx) => idx !== index));
+  };
+  const edit = (index) => {
+    setTableList(
+      // 변경된 배열
+      tbList.map((contact, idx) => {
+        // 배열반복요소의 idx와 클릭한 요소의 index가 같은지 비교
+        if (idx === index) {
+          // 같으면 isEdit 속성을 추가함
+          contact.isEdit = true;
+        }
+
+        return contact;
+      })
+    );
+  };
+
+  const cancel = (index) => {
+    setTableList(
+      tbList.map((contact, idx) => {
+        if (idx === index) {
+          delete contact.isEdit;
+        }
+
+        return contact;
+      })
+    );
+  };
+
+  const save = (index) => {
+    setTableList(
+      tbList.map((contact, idx) => {
+        if (idx === index) {
+          const td = tr.current.children[index];
+
+          const editInput = td.querySelector("input");
+          const edit2Input = td.querySelector("input");
+          const edit3Input = td.querySelector("input");
+
+          contact.fname = editInput.value;
+          contact.phone = edit2Input.value;
+          contact.email = edit3Input.value;
+
+          delete contact.isEdit;
+        }
+
+        return contact;
+      })
+    );
+  };
+  return (
+    <>
+      <div>
+        <input
+          className="input"
+          type="text"
+          placeholder="이름"
+          ref={fnameInput}
+        />
+        <input
+          className="input2"
+          type="text"
+          placeholder="전화번호"
+          ref={phoneInput}
+        />
+        <input
+          className="input3"
+          type="text"
+          placeholder="이메일"
+          ref={emailInput}
+        />
+        <button onClick={add}>추가</button>
+      </div>
+      <div>
+        <table>
+          <thead>
+            <tbody>
+              {tbList.map((contact, index) => (
+                <tr key={index} ref={tr}>
+                  <td>
+                    <button
+                      onClick={() => {
+                        remove(index);
+                      }}
+                    >
+                      ※
+                    </button>
+                  </td>
+                  {!contact.isEdit && (
+                    <tr key={index}>
+                      <td>{contact.fname}</td>
+                      <td>{contact.phone}</td>
+                      <td>{contact.email}</td>
+                      <td>
+                        {!contact.isEdit && (
+                          <button
+                            onClick={() => {
+                              edit(index);
+                            }}
+                          >
+                            edit
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                  )
+                  {contact.isEdit && (
+                    <input type="text" defaultValue={contact.fname}></input>
+                  )}
+                  {contact.isEdit && (
+                    <input type="text" defaultValue={contact.phone}></input>
+                  )}
+                  {contact.isEdit && (
+                    <input type="text" defaultValue={contact.email}></input>
+                  )}
+                  {contact.isEdit && (
+                    <button
+                      onClick={() => {
+                        save(index);
+                      }}
+                    >
+                      save
+                    </button>
+                  )}
+                  {contact.isEdit && (
+                    <button
+                      onClick={() => {
+                        cancel(index);
+                      }}
+                    >
+                      취소
+                    </button>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </thead>
+        </table>
+      </div>
+    </>
+  );
+};
+
+export default Contact;
